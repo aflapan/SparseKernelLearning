@@ -12,7 +12,6 @@ Uses the Matrix and Vector classes from VectorAndMatrixClasses.cpp
 using namespace std;
 
 
-
 Vector backSolve(Matrix& upperTriangMat, Vector& targetVec) {
 	// Include check for zero on diagonal
 	int dim = targetVec.getDim();
@@ -109,6 +108,16 @@ LinearSolutions LinearModel::train(double ridgePen, double sparsityPen) {
 		oldObjVal = newObjVal;
 	}
 
+	for (int coord = 0; coord < ncols; coord++) {
+		if (abs(stds.values[coord]) > 1e-10) {
+			coefficients.values[coord] /= stds.values[coord];
+			solutions.updateCoeffVal(coefficients.values[coord], coord);
+		}
+	}
+
+	intercept = responseMean - coefficients * means;
+	solutions.setIntercept(intercept);
+
 	return solutions;
 }
 
@@ -118,7 +127,7 @@ ostream& operator<<(ostream& stream, LinearSolutions& solution) {
 	Vector coeffs = solution.getCoefficients();
 	int dim = coeffs.getDim();
 
-	stream << "Intercept: " << solution.getIntercept() << "\n\n";
+	stream << "\n" << "Intercept: " << solution.getIntercept() << "\n\n";
 
 	stream << "Regression Coefficients: " << "\n";
 	for (int coord = 0; coord < dim; coord++) {
