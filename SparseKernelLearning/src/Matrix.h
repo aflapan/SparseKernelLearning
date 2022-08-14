@@ -59,6 +59,11 @@ public:
 
 	}
 
+	// Swap and assignment operator 
+	friend void swap(Matrix& mat1, Matrix& mat2);
+
+	Matrix& operator=(Matrix otherMat);
+
 	// Functionality to replace a row or column values
 	void replaceRow(int rowIndex, Vector& replacement);
 	void replaceCol(int colIndex, Vector& replacement);
@@ -115,4 +120,5 @@ Matrix readTxt(char const* filename);
 // Function to generate the identity matrix 
 Matrix Identity(int dimension);
 
+Matrix zeroMat(int nrows, int ncols);
 

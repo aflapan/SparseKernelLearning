@@ -8,9 +8,17 @@ The implementations are based on the reference
 
 #include "Matrix.h"
 #include "Vector.h"
+#include "MatrixDecompositions.h"
 
 #include <iostream>
 using namespace std;
+
+
+
+// ------------------------------------------------------------------------------ //
+// ------------------------------ QR Decomposition ------------------------------ //
+// ------------------------------------------------------------------------------ //
+
 
 
 /*
@@ -20,7 +28,7 @@ Note, overwrites original matrix to have orthonormal column vectors, transformin
 it into the matrix Q. Returns the upper-triangular square matrix R satisfying QR = original matrix. 
 */
 
-Matrix QR(Matrix& mat) {
+QR qrDecomp(Matrix mat) {
 	int nrows = mat.getNumRows(), ncols = mat.getNumCols();
 	Matrix R(ncols, ncols);
 
@@ -61,8 +69,71 @@ Matrix QR(Matrix& mat) {
 		}
 	}
 
-	return R;
+	QR qr(mat, R);
+
+	return qr;
+}
+
+Matrix Householder(Matrix mat) {
+
+	int ncols = mat.getNumCols(), nrows = mat.getNumRows();
+
+	Matrix ReflectionVectors = zeroMat(nrows, ncols);
+
+	for (int col = 0; col < ncols; col++) {
+		int subDim = nrows - col;
+
+		Vector colSubVec = zeroVec(nrows);
+
+		for (int row = col; row < nrows; row++) {
+			colSubVec.values[row] = mat.values[row][col]; 
+		}
+
+		Vector basisVec = basisVector(nrows, col);
+		double scalar = sign(colSubVec.values[0]) * norm(colSubVec);
+		
+		basisVec = scalar * basisVec;
+		Vector orthogVec = basisVec + colSubVec;
+		orthogVec = orthogVec / norm(orthogVec);
+		
+		// Save orthonormal columns 
+		ReflectionVectors.replaceCol(col, orthogVec);
+
+		for (int nextCol = col; nextCol < ncols; nextCol++) {
+
+			Vector nextColSubVec = zeroVec(nrows);
+			for (int row = col; row < nrows; row++) {
+				nextColSubVec.values[row] = mat.values[row][nextCol];
+			}
+
+			Vector reflection = orthogVec * (2 * (orthogVec * nextColSubVec));
+			reflection = nextColSubVec - reflection; // issue here
+													 
+			// replace values in matrix
+			for (int row = col; row < nrows; row++) {
+				mat.values[row][nextCol] = reflection.values[row-col]; 
+			}
+		}
+	
+
+	}
+
+	return ReflectionVectors;
+
 }
 
 
 
+
+// ------------------------------------------------------------------------------ //
+// ------------------------------ Helper Functions ------------------------------ //
+// ------------------------------------------------------------------------------ //
+
+
+
+inline int sign(double x) {
+	if (x >= 0)
+		return 1;
+	else
+		return -1;
+}

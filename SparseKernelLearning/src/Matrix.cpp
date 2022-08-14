@@ -126,6 +126,47 @@ Matrix operator/(Matrix& mat, double scalar) {
 	return dividedMat;
 }
 
+
+// Swap and assignment operator 
+void swap(Matrix& mat1, Matrix& mat2) {
+	using std::swap;
+
+	swap(mat1.nrows, mat2.nrows);
+	swap(mat2.ncols, mat2.ncols);
+	swap(mat1.values, mat2.values);
+}
+
+Matrix& Matrix::operator=(Matrix otherMat) {
+
+	// Delete old values 
+	for (int row = 0; row < nrows; row++) {
+		delete[] values[row];
+	}
+	delete[] values;
+
+	// allocate new memory
+	nrows = otherMat.getNumRows();
+	ncols = otherMat.getNumCols();
+
+	double** values;
+	values = new double* [nrows];
+
+	register int row;
+	for (row = 0; row < nrows; row++)
+		values[row] = new double[ncols];
+
+	// Copy values 
+	for (int row = 0; row < nrows; row++) {
+		for (int col = 0; col < ncols; col++) {
+			values[row][col] = otherMat.values[row][col];
+		}
+	}
+
+	this->values = values;
+	return *this;
+}
+
+
 Matrix transpose(Matrix& mat) {
 	int nrows = mat.getNumRows(), ncols = mat.getNumCols();
 	Matrix trans(ncols, nrows);
@@ -242,6 +283,7 @@ double norm(Matrix& mat) {
 
 // Reading File Input
 Matrix readTxt(char const* filename) {
+	cout << "\nReading data...\n";
 	int rowCount = 0, colCount = 0, totalSize = 0;
 
 	ifstream fin(filename, ios::in | ios::binary);
@@ -273,6 +315,7 @@ Matrix readTxt(char const* filename) {
 			mat.values[row][col] = valueHolder[row * ncols + col];
 		}
 	}
+	cout << "Done!\n";
 	return mat;
 }
 
@@ -299,4 +342,15 @@ Matrix Identity(int dimension) {
 	}
 
 	return identityMat;
+}
+
+Matrix zeroMat(int nrows, int ncols) {
+	Matrix zero(nrows, ncols);
+
+	for (int row = 0; row < nrows; row++) {
+		for (int col = 0; col < ncols; col++) {
+			zero.values[row][col] = 0;
+		}
+	}
+	return zero;
 }

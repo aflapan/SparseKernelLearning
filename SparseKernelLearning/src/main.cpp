@@ -11,15 +11,15 @@ using namespace std;
 int main()
 {
 	Matrix trainSamples = readTxt("C:/Users/Alexander/OneDrive//Documents/ProgrammingPractice/Cpp/LinearAlgebra/sample_data.txt");
-	Matrix response = readTxt("C:/Users/Alexander/OneDrive/Documents/ProgrammingPractice/Cpp/LinearAlgebra/sample_response.txt");
+	
+	Matrix matResponse = readTxt("C:/Users/Alexander/OneDrive/Documents/ProgrammingPractice/Cpp/LinearAlgebra/sample_response.txt");
 
-	Vector vecResponse = response.getCol(0); // convert from matrix to column
-	Matrix R = QR(trainSamples);
-	Matrix transposeSamples = transpose(trainSamples);
-	Vector targetVec = transposeSamples * vecResponse;
-	Vector solutions = backSolve(R, targetVec);
+	Vector response = matResponse.getCol(0); // convert from matrix to vector
 
-	cout << solutions;
+	LinearModel model(trainSamples, response);
+
+	LinearSolutions solution = model.train(0.01, 0.2);
+	cout << solution;
 
 	return 0;
 }

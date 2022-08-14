@@ -18,6 +18,14 @@ public:
 	Vector() {dimension = 0;} // default constructor
 
 	Vector(int dim) {
+		try {
+			if(dim < 0)
+				throw dim >= 0;
+		}
+		catch (bool) {
+			cout << "Exception -- Vector dimension is negative: " << dim << "\n";
+		}
+
 		dimension = dim;
 		values = new double[dimension];
 	}
@@ -26,8 +34,9 @@ public:
 		delete[] values;
 	}
 
+
 	// getter function for dimension
-	int getDim() { return dimension; }
+	int getDim() { return dimension; }		
 
 	// Copy Constructor 
 	Vector(const Vector& vec) {
@@ -39,6 +48,11 @@ public:
 			values[coord] = vec.values[coord];
 		}
 	}
+
+	// Swap and assignment operator 
+	friend void swap(Vector& vec1, Vector& vec2);
+
+	Vector& operator=(Vector otherVec);
 
 	// Euclidean Norm
 	double friend norm(Vector& vec);
@@ -55,10 +69,15 @@ public:
 	friend Vector operator/(Vector& vec, double scalar);
 	friend Vector operator+(Vector& vec1, Vector& vec2);
 	friend Vector operator-(Vector& vec1, Vector& vec2);
-	friend double operator*(Vector& vec1, Vector& vec2);
+	friend double operator*(Vector& vec1, Vector& vec2); // dot product 
+	friend Vector operator-(Vector& vec, double scalar); // broadcasting scalar subtraction 
+	friend Vector operator+(Vector& vec, double scalar); // broadcasting addition
 
 	// Custom inserter
 	friend ostream& operator<<(ostream& stream, Vector& vec);
 };
 
 
+Vector basisVector(int dimension, int coord);
+
+Vector zeroVec(int dimension);
