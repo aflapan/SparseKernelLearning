@@ -204,3 +204,12 @@ Vector zeroVec(int dimension) {
 	}
 	return zero;
 }
+
+Vector onesVec(int dimension) {
+	Vector ones(dimension);
+
+	for (int coord = 0; coord < dimension; coord++) {
+		ones.values[coord] = 1;
+	}
+	return ones;
+}

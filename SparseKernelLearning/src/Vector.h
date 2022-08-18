@@ -81,3 +81,5 @@ public:
 Vector basisVector(int dimension, int coord);
 
 Vector zeroVec(int dimension);
+
+Vector onesVec(int dimension);
