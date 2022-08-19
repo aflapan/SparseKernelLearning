@@ -139,7 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Kernel.cpp" />
+    <ClCompile Include="src\Kernel.cpp" />
     <ClCompile Include="src\LinearRegression.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Matrix.cpp" />
@@ -147,7 +147,7 @@
     <ClCompile Include="src\Vector.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Kernel.h" />
+    <ClInclude Include="src\Kernel.h" />
     <ClInclude Include="src\LinearRegression.h" />
     <ClInclude Include="src\Matrix.h" />
     <ClInclude Include="src\MatrixDecompositions.h" />
