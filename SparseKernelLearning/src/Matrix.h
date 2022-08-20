@@ -99,6 +99,7 @@ public:
 
 	// Column Means and Standard Deviations 
 	Vector colMeans();
+	Vector rowMeans();
 
 	Vector colStanDevs();
 	Vector colStanDevs(Vector& colMeans);
@@ -109,11 +110,36 @@ public:
 };
 
 
+// --------------------------------------------------------------------------------------------------------- //
+// ------------------------------ Data class for storing row and column means ------------------------------ //
+// --------------------------------------------------------------------------------------------------------- //
+
+class ColRowMeans {
+	Vector colMeans;
+	Vector rowMeans;
+public:
+	ColRowMeans(Vector cMeans, Vector rMeans) {
+		colMeans = cMeans;
+		rowMeans = rMeans;
+	}
+
+	// getter and setter functions 
+	Vector getRowMeans() { return rowMeans; }
+	Vector getColMeans() { return colMeans; }
+
+	void setRowMeans(Vector newRowMeans) { rowMeans = newRowMeans; }
+	void setColMeans(Vector newColMeans) { colMeans = newColMeans; }
+};
+
+
 // ------------------------------------------------------------------------------------- //
 // ------------------------------ Functions and Operators ------------------------------ //
 // ------------------------------------------------------------------------------------- //
 
 
+// Function for centering both the rows and columns. Alters original matrix.
+// Returns a data class containing original row and column means. 
+ColRowMeans centerRowsCols(Matrix& mat);
 
 // Reading File Input
 Matrix readTxt(char const* filename);

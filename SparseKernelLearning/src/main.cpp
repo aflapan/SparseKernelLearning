@@ -18,13 +18,16 @@ int main()
 	Vector response = matResponse.getCol(0); // convert from matrix to vector
 
 
-	GaussianKernel gk(10.0);
-	Vector testVec = trainSamples.getRow(0);
-	//Vector kernVec = gk.eval(trainSamples, testVec);
+	GaussianKernel gk(p, 10.0);
 
+	// Test kernel regression 
 	cout << "Forming kernel matrix... ";
-	Matrix kernMat = gk.eval(trainSamples);
-	cout << "Done forming kernel matrix!" << "\n";
+	Matrix kernelMat = gk.eval(trainSamples);
+	cout << " Done!\n";
+
+	cout << "Centering rows and columsn... ";
+	ColRowMeans crMeans = centerRowsCols(kernelMat);
+	cout << "Done!\n";
 
 	return 0;
 }

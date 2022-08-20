@@ -235,13 +235,22 @@ Matrix Matrix::subset(int* rows, int* cols, int numRows, int numCols) {
 
 // Column Means and Standard Deviations 
 Vector Matrix::colMeans() {
-	Vector colMeans(ncols);
+	Vector cMeans(ncols);
 
 	for (int colIndex = 0; colIndex < ncols; colIndex++) {
 		Vector colVec = this->getCol(colIndex);
-		colMeans.values[colIndex] = mean(colVec);
+		cMeans.values[colIndex] = mean(colVec);
 	}
-	return colMeans;
+	return cMeans;
+}
+
+Vector Matrix::rowMeans() {
+	Vector rMeans(nrows);
+	for (int rowIndex = 0; rowIndex < nrows; rowIndex++) {
+		Vector rowVec = this->getRow(rowIndex);
+		rMeans.values[rowIndex] = mean(rowVec);
+	}
+	return rMeans;
 }
 
 
@@ -283,7 +292,7 @@ double norm(Matrix& mat) {
 
 // Reading File Input
 Matrix readTxt(char const* filename) {
-	cout << "\nReading data...\n";
+	cout << "\nReading data... ";
 	int rowCount = 0, colCount = 0, totalSize = 0;
 
 	ifstream fin(filename, ios::in | ios::binary);
@@ -323,6 +332,31 @@ Matrix readTxt(char const* filename) {
 // ------------------------------ Additional Matrix Functions ------------------------------ //
 // ----------------------------------------------------------------------------------------- //
 
+
+// Function for centering both the rows and columns. Alters original matrix.
+// Returns a data class containing original row and column means. 
+ColRowMeans centerRowsCols(Matrix& mat) {
+	int nrows = mat.getNumRows(), ncols = mat.getNumCols();
+
+	// Center columns
+	Vector cMeans = mat.colMeans();
+	for (int colIndex = 0; colIndex < ncols; colIndex++) {
+		Vector column = mat.getCol(colIndex);
+		column = column - cMeans.values[colIndex];
+		mat.replaceCol(colIndex, column);
+	}
+
+	// Center rows 
+	Vector rMeans = mat.rowMeans();
+	for (int rowIndex = 0; rowIndex < nrows; rowIndex++) {
+		Vector row = mat.getRow(rowIndex);
+		row = row - rMeans.values[rowIndex];
+		mat.replaceRow(rowIndex, row);
+	}
+	// store original row and column values 
+	ColRowMeans colAndRowMeans(cMeans, rMeans);
+	return colAndRowMeans;
+}
 
 // Function to generate the identity matrix 
 Matrix Identity(int dimension) {

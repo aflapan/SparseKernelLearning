@@ -21,6 +21,12 @@ using namespace std;
 
 double GaussianKernel::eval(Vector& vec1, Vector& vec2) {
 	Vector diff = vec1 - vec2;
+	// Scale coefficients of diff vector
+
+	for (int coord = 0; coord < diff.getDim(); coord++) {
+		diff.values[coord] *= this->getWeights().values[coord];
+	}
+
 	double normVal = norm(diff);
 	return exp(-normVal * normVal / scale);
 }
@@ -40,7 +46,7 @@ Vector GaussianKernel::eval(Matrix& mat, Vector& vec) {
 		sqNormVal = 0;
 
 		for (int coord = 0; coord < dim; coord++) {
-			diff = (vec.values[coord] - mat.values[row][coord]);
+			diff = (vec.values[coord] - mat.values[row][coord]) * this->getWeights().values[coord];
 			sqNormVal += diff * diff;
 		}
 		kernelVec.values[row] = exp(-sqNormVal / scale);
@@ -65,7 +71,7 @@ Matrix GaussianKernel::eval(Matrix& mat1, Matrix& mat2) {
 			sqNormVal = 0;
 
 			for (int coord = 0; coord < ncols1; coord++) {
-				diff = (mat1.values[row1][coord] - mat2.values[row2][coord]);
+				diff = (mat1.values[row1][coord] - mat2.values[row2][coord]) * this->getWeights().values[coord];
 				sqNormVal += diff * diff;
 			}
 			kernMat.values[row1][row2] = exp(-sqNormVal / scale);

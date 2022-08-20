@@ -3,51 +3,37 @@
 #include "Vector.h"
 #include "Matrix.h"
 
-// ------------------------------------------------------------------------------------------------------------ //
-// ------------------------------ Kernel and Weighted Kernel Polymorphic Classes ------------------------------ //
-// ------------------------------------------------------------------------------------------------------------ //
-
-class Kernel { // note to self, think about what I want to encapsualte into kernel 
-
-public:
-
-};
+// ----------------------------------------------------------------------------------- //
+// ------------------------------ Weighted Kernel Class ------------------------------ //
+// ----------------------------------------------------------------------------------- //
 
 
-class WeightedKernel :public Kernel {
+class WeightedKernel {
 	int dimension;
 	Vector weights; 
 public:
 
 	// Constructors 
-	WeightedKernel(int dim) : Kernel() { 
+	WeightedKernel() {} 
+
+	WeightedKernel(int dim) { 
 		dimension = dim;
 		weights = onesVec(dim);
 	}
 
-	WeightedKernel(Vector weightVec) : Kernel() {
+	WeightedKernel(Vector weightVec) {
 		dimension = weightVec.getDim();
 		weights = weightVec;
 	}
 
-	WeightedKernel(int dim, Vector weightVec) : Kernel() {
+	WeightedKernel(int dim, Vector weightVec) {
 		dimension = dim;
 		weights = weightVec;
-
 	}
 
 	// getter and setter for weights 
 	Vector getWeights() { return weights; }
 	void setWeights(Vector newWeights) { weights = newWeights;}
-
-	// evaluation functions 
-
-
-
-
-	// Derivative functions with respect to weights 
-
-
 
 };
 
@@ -59,10 +45,10 @@ public:
 
 
 
-class GaussianKernel : public Kernel {
+class GaussianKernel : public WeightedKernel {
 	double scale;
 public:
-	GaussianKernel(double scaleParam) : Kernel() {
+	GaussianKernel(int dim, double scaleParam) : WeightedKernel(dim) {
 		scale = scaleParam;
 	}
 
