@@ -34,6 +34,7 @@ double GaussianKernel::eval(Vector& vec1, Vector& vec2) {
 Vector GaussianKernel::eval(Matrix& mat, Vector& vec) {
 	int dim = vec.getDim();
 	int nrows = mat.getNumRows();
+	Vector weights = this->getWeights();
 
 	if (mat.getNumCols() != dim)
 		throw invalid_argument("Number of matrix columns and vector dimension must be equal.");
@@ -46,7 +47,7 @@ Vector GaussianKernel::eval(Matrix& mat, Vector& vec) {
 		sqNormVal = 0;
 
 		for (int coord = 0; coord < dim; coord++) {
-			diff = (vec.values[coord] - mat.values[row][coord]) * this->getWeights().values[coord];
+			diff = (vec.values[coord] - mat.values[row][coord]) * weights.values[coord];
 			sqNormVal += diff * diff;
 		}
 		kernelVec.values[row] = exp(-sqNormVal / scale);
@@ -58,7 +59,7 @@ Vector GaussianKernel::eval(Matrix& mat, Vector& vec) {
 Matrix GaussianKernel::eval(Matrix& mat1, Matrix& mat2) {
 	int ncols1 = mat1.getNumCols(), nrows1 = mat1.getNumRows();
 	int ncols2 = mat2.getNumCols(), nrows2 = mat2.getNumRows();
-
+	Vector weights = this->getWeights();
 
 	if (ncols1 != ncols2)
 		throw invalid_argument("Number of columns in both matrices must be equal.");
@@ -71,7 +72,7 @@ Matrix GaussianKernel::eval(Matrix& mat1, Matrix& mat2) {
 			sqNormVal = 0;
 
 			for (int coord = 0; coord < ncols1; coord++) {
-				diff = (mat1.values[row1][coord] - mat2.values[row2][coord]) * this->getWeights().values[coord];
+				diff = (mat1.values[row1][coord] - mat2.values[row2][coord]) * weights.values[coord];
 				sqNormVal += diff * diff;
 			}
 			kernMat.values[row1][row2] = exp(-sqNormVal / scale);

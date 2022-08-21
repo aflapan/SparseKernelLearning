@@ -31,7 +31,7 @@ public:
 
 QR qrDecomp(Matrix mat);
 
-Matrix Householder(Matrix mat);
+Matrix Householder(Matrix &mat);
 
 
 

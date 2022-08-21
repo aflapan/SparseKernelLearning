@@ -3,6 +3,8 @@
 #include "Vector.h"
 #include "Matrix.h"
 #include "Kernel.h"
+#include "LinearRegression.h"
+
 
 
 class KenrnelRegressionSolutions {
@@ -12,6 +14,8 @@ class KenrnelRegressionSolutions {
 
 public:
 	// Consturctor 
+	KenrnelRegressionSolutions() {}
+
 	KenrnelRegressionSolutions(Vector w, Vector sc, double i) {
 		weights = w;
 		sampleCoefficients = sc;
@@ -39,17 +43,24 @@ public:
 class KernelRegression {
 	Matrix trainSamples;
 	Vector trainResponse;
-	WeightedKernel kernel;
+	WeightedKernel *kernel;
+	KenrnelRegressionSolutions solutions;
 public:
-	KernelRegression(Matrix mat, Vector vec, WeightedKernel kern) {
+	KernelRegression(Matrix mat, Vector vec, WeightedKernel *kern) {
 		trainSamples = mat;
 		trainResponse = vec;
 		kernel = kern;
 	}
 
+	// getter functions
+	KenrnelRegressionSolutions getSolution() { return solutions; }
+
 	// train methods 
 	KenrnelRegressionSolutions train(double ridgePen);
 	KenrnelRegressionSolutions train(double ridgePen, double sparsityPen);
+
+	// predict methods
+	double predict(Vector& newSample);
 };
 
 

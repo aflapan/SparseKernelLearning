@@ -74,23 +74,21 @@ QR qrDecomp(Matrix mat) {
 	return qr;
 }
 
-Matrix Householder(Matrix mat) {
+Matrix Householder(Matrix& mat) {
 
 	int ncols = mat.getNumCols(), nrows = mat.getNumRows();
 
 	Matrix ReflectionVectors = zeroMat(nrows, ncols);
 
 	for (int col = 0; col < ncols; col++) {
-		int subDim = nrows - col;
-
 		Vector colSubVec = zeroVec(nrows);
 
-		for (int row = col; row < nrows; row++) {
-			colSubVec.values[row] = mat.values[row][col]; 
+		for (int coord = col; coord < nrows; coord++) {
+			colSubVec.values[coord] = mat.values[coord][col];
 		}
 
 		Vector basisVec = basisVector(nrows, col);
-		double scalar = sign(colSubVec.values[0]) * norm(colSubVec);
+		double scalar = sign(colSubVec.values[col]) * norm(colSubVec);
 		
 		basisVec = scalar * basisVec;
 		Vector orthogVec = basisVec + colSubVec;
@@ -106,12 +104,13 @@ Matrix Householder(Matrix mat) {
 				nextColSubVec.values[row] = mat.values[row][nextCol];
 			}
 
+
 			Vector reflection = orthogVec * (2 * (orthogVec * nextColSubVec));
 			reflection = nextColSubVec - reflection; // issue here
 													 
 			// replace values in matrix
 			for (int row = col; row < nrows; row++) {
-				mat.values[row][nextCol] = reflection.values[row-col]; 
+				mat.values[row][nextCol] = reflection.values[row]; // changing row-col -> row 
 			}
 		}
 	

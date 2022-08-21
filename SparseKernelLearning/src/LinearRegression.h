@@ -11,12 +11,12 @@ using namespace std;
 // ------------------------------ Linear Solutions Class ------------------------------ //
 // ------------------------------------------------------------------------------------ //
 
-class LinearSolutions {
+class RegressionSolutions {
 	double Intercept;
 	Vector Coefficients;
 public:
 	// Constructor 
-	LinearSolutions(double newIntercept, Vector regCoeffs) {
+	RegressionSolutions(double newIntercept, Vector regCoeffs) {
 		Intercept = newIntercept;
 		Coefficients = regCoeffs;
 	}
@@ -30,7 +30,7 @@ public:
 	void updateCoeffVal(double newVal, int coordinate) { Coefficients.values[coordinate] = newVal; }
 
 	// Custom inserter
-	friend ostream& operator<<(ostream& stream, LinearSolutions& solution);
+	friend ostream& operator<<(ostream& stream, RegressionSolutions& solution);
 };
 
 
@@ -48,11 +48,11 @@ public:
 		trainResponse = trainingResponse;
 	}
 
-	LinearSolutions train();
-	LinearSolutions train(double ridgePen);
-	LinearSolutions train(double ridgePen, double sparsityPen);
+	RegressionSolutions train();
+	RegressionSolutions train(double ridgePen);
+	RegressionSolutions train(double ridgePen, double sparsityPen);
 
-	double objectiveValue(LinearSolutions& intAndCoeffs, double ridgePen, double sparsityPen) {
+	double objectiveValue(RegressionSolutions& intAndCoeffs, double ridgePen, double sparsityPen) {
 		int nrows = trainSamples.getNumRows(), ncols = trainSamples.getNumCols();
 
 		// initialize objective function components 

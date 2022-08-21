@@ -31,6 +31,16 @@ public:
 		weights = weightVec;
 	}
 
+	// pure virtual evaluation functions 
+	virtual double eval(Vector& vec1, Vector& vec2) = 0;
+
+	virtual Vector eval(Matrix& mat, Vector& vec) = 0;
+
+	virtual Matrix eval(Matrix& mat1, Matrix& mat2) = 0;
+
+	virtual Matrix eval(Matrix& mat) = 0;
+
+
 	// getter and setter for weights 
 	Vector getWeights() { return weights; }
 	void setWeights(Vector newWeights) { weights = newWeights;}

@@ -29,7 +29,7 @@ Vector backSolve(Matrix& upperTriangMat, Vector& targetVec) {
 }
 
 
-LinearSolutions LinearModel::train() {
+RegressionSolutions LinearModel::train() {
 
 	// Normalize columns to be mean zero and standDev 1
 	Vector means = trainSamples.colMeans();
@@ -57,12 +57,12 @@ LinearSolutions LinearModel::train() {
 	}
 
 	double intercept = responseMean - regCoefficients * means;
-	LinearSolutions solutions(intercept, regCoefficients);
+	RegressionSolutions solutions(intercept, regCoefficients);
 
 	return solutions;
 }
 
-LinearSolutions LinearModel::train(double ridgePen, double sparsityPen) {
+RegressionSolutions LinearModel::train(double ridgePen, double sparsityPen) {
 	int nrows = trainSamples.getNumRows(), ncols = trainSamples.getNumCols();
 
 	// Normalize columns to be mean zero and standDev 1
@@ -76,7 +76,7 @@ LinearSolutions LinearModel::train(double ridgePen, double sparsityPen) {
 	// Initialize solutions 
 	Vector coefficients = zeroVec(ncols);
 	double intercept = 0;
-	LinearSolutions solutions(intercept, coefficients);
+	RegressionSolutions solutions(intercept, coefficients);
 
 	// Initialize vaiables
 	double shrinkage = nrows * sparsityPen / 2;
@@ -124,7 +124,7 @@ LinearSolutions LinearModel::train(double ridgePen, double sparsityPen) {
 
 
 
-ostream& operator<<(ostream& stream, LinearSolutions& solution) {
+ostream& operator<<(ostream& stream, RegressionSolutions& solution) {
 	Vector coeffs = solution.getCoefficients();
 	int dim = coeffs.getDim();
 

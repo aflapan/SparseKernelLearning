@@ -253,7 +253,6 @@ Vector Matrix::rowMeans() {
 	return rMeans;
 }
 
-
 Vector Matrix::colStanDevs() {
 	Vector stanDevs(ncols);
 
@@ -292,7 +291,7 @@ double norm(Matrix& mat) {
 
 // Reading File Input
 Matrix readTxt(char const* filename) {
-	cout << "\nReading data... ";
+	cout << "Reading data... ";
 	int rowCount = 0, colCount = 0, totalSize = 0;
 
 	ifstream fin(filename, ios::in | ios::binary);
