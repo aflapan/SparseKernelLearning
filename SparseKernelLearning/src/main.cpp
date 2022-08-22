@@ -18,15 +18,16 @@ int main()
 	Matrix matResponse = readTxt("C:/Users/Alexander/OneDrive/Documents/ProgrammingPractice/Cpp/LinearAlgebra/sample_response.txt");
 	Vector response = matResponse.getCol(0); // convert from matrix to vector
 
+
 	GaussianKernel gk(p, 100.0);
 	KernelRegression kernReg(trainSamples, response, &gk);
-	kernReg.train(1e-5);
+	double ridgePen = 1e-10; 
+	double sparsityPen = 0.1;
+	cout << "Training kernel regression... ";
+	kernReg.train(ridgePen, sparsityPen);
+	cout << "Done!\n";
 
-
-	for (int sampl = 0; sampl < numSamps; sampl++) {
-		Vector testVec = trainSamples.getRow(sampl);
-		//cout << "Prediction: " << kernReg.predict(testVec) << ", actual value: " << response.values[sampl] << endl;
-		cout << "Error: " << kernReg.predict(testVec) - response.values[sampl] << endl;
-	}
+	Vector weights = kernReg.getSolution().getWeights();
+	cout << weights;
 	
 }

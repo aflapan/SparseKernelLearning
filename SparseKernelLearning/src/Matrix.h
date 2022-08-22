@@ -61,7 +61,7 @@ public:
 	}
 
 	// Swap and assignment operator 
-	friend void swap(Matrix& mat1, Matrix& mat2);
+	//friend void swap(Matrix& mat1, Matrix& mat2);
 
 	Matrix& operator=(Matrix otherMat);
 
@@ -149,3 +149,5 @@ Matrix Identity(int dimension);
 
 Matrix zeroMat(int nrows, int ncols);
 
+// Fast computation of XtX
+Matrix crossprod(Matrix& mat);

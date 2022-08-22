@@ -40,11 +40,16 @@ public:
 
 	virtual Matrix eval(Matrix& mat) = 0;
 
+	// pure virtual derivative functions
+	virtual Vector deriv(Vector& vec1, Vector& vec2) = 0;
+	
+	virtual Matrix deriv(Matrix& mat, Vector& vec) = 0;
 
-	// getter and setter for weights 
+
+	// getter and setters 
+	int getDim() { return dimension; }
 	Vector getWeights() { return weights; }
 	void setWeights(Vector newWeights) { weights = newWeights;}
-
 };
 
 
@@ -70,5 +75,11 @@ public:
 	Matrix eval(Matrix& mat1, Matrix& mat2);
 
 	Matrix eval(Matrix& mat);
+
+	// pure virtual derivative functions
+	Vector deriv(Vector& vec1, Vector& vec2);
+
+	Matrix deriv(Matrix& mat, Vector& vec);
+
 
 };

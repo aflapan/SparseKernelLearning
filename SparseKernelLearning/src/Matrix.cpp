@@ -128,6 +128,7 @@ Matrix operator/(Matrix& mat, double scalar) {
 
 
 // Swap and assignment operator 
+/*
 void swap(Matrix& mat1, Matrix& mat2) {
 	using std::swap;
 
@@ -135,6 +136,7 @@ void swap(Matrix& mat1, Matrix& mat2) {
 	swap(mat2.ncols, mat2.ncols);
 	swap(mat1.values, mat2.values);
 }
+*/
 
 Matrix& Matrix::operator=(Matrix otherMat) {
 
@@ -386,4 +388,32 @@ Matrix zeroMat(int nrows, int ncols) {
 		}
 	}
 	return zero;
+}
+
+
+// Fast computation of XtX
+Matrix crossprod(Matrix& mat) {
+	int ncols = mat.getNumCols(), nrows = mat.getNumRows();
+	Matrix crossprod(ncols, ncols);
+
+	for (int col1 = 0; col1 < ncols; col1++) {
+		for (int col2 = col1; col2 < ncols; col2++) {
+			double dotprod = 0;
+			for (int row = 0; row < nrows; row++) {
+				dotprod += mat.values[row][col1] * mat.values[row][col2];
+			}
+			crossprod.values[col1][col2] = dotprod;
+		}
+
+	}
+
+	// Reflect values across main diagonal 
+	for (int col1 = 0; col1 < ncols; col1++) {
+		for (int col2 = (col1 + 1); col2 < ncols; col2++) {
+			crossprod.values[col2][col1] = crossprod.values[col1][col2];
+
+		}
+	}
+
+	return crossprod;
 }

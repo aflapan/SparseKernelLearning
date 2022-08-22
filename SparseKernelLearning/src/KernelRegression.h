@@ -60,9 +60,28 @@ public:
 	KenrnelRegressionSolutions train(double ridgePen, double sparsityPen);
 
 	// predict methods
-	double predict(Vector& newSample);
+	double predict(Vector& vec);
+	Vector predict(Matrix& mat);
+
+	// Functionality for solving sparse kernel regression
+	Matrix makeTMat();
+	Matrix makeQMat(Matrix& tMat);
+	Vector makeBetaVec(Matrix& kernMat, Matrix& tMat, Matrix& qMat, double ridgePen);
+	Vector minimizeQuadForm(Matrix& qMat, Vector& betaVec, double sparsityPen, int maxIter = 1e5, double convgThresh = 1e-10);
+
+	// Convergence functionality 
+	double meanSquaredError();
+
+	double objectiveVal(double ridgePen, double sparsityPen);
+	//double objectiveVal(Matrix& centeredKernelMat);
+
 };
 
 
 
+// ------------------------------------------------------------------------------ //
+// ------------------------------ Helper fucntions ------------------------------ //
+// ------------------------------------------------------------------------------ //
+
+double quadFormObjectiveVal(Vector& weights, Matrix& qMat, Vector& betaVec, double sparsityPen);
 

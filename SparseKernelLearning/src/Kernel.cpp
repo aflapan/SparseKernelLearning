@@ -17,7 +17,48 @@ using namespace std;
 
 
 
-// Gaussian Kernel 
+// Gaussian kernel derivative functions 
+Vector GaussianKernel::deriv(Vector& vec1, Vector& vec2) {
+	Vector diff = vec1 - vec2;
+	Vector weights = this->getWeights();
+	int dim = this->getDim();
+
+	// Weight difference vectors 
+	for (int coord = 0; coord < dim; coord++) {
+		diff.values[coord] *= weights.values[coord];
+	}
+
+	double multFactor = -(2.0 / scale) * this->eval(vec1, vec2);
+	return multFactor * diff;
+}
+
+Matrix GaussianKernel::deriv(Matrix& mat, Vector& vec) {
+	int nrows = mat.getNumRows(), ncols = mat.getNumCols();
+	Matrix derivMat(nrows, ncols);
+
+	Vector weights = this->getWeights();
+	int dim = this->getDim();
+
+	for (int row = 0; row < nrows; row++) {
+		Vector rowVec = mat.getRow(row);
+		Vector diff = rowVec - vec;
+
+		for (int coord = 0; coord < dim; coord++) {
+			diff.values[coord] *= weights.values[coord];
+		}
+
+		double multFactor = -(2.0 / scale) * this->eval(rowVec, vec);
+		diff = multFactor * diff;
+		derivMat.replaceRow(row, diff);
+	}
+
+
+	return derivMat;
+}
+
+
+
+// Gaussian Kernel evaluation functions 
 
 double GaussianKernel::eval(Vector& vec1, Vector& vec2) {
 	Vector diff = vec1 - vec2;
