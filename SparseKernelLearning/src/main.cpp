@@ -23,11 +23,20 @@ int main()
 	KernelRegression kernReg(trainSamples, response, &gk);
 	double ridgePen = 1e-10; 
 	double sparsityPen = 0.1;
-	cout << "Training kernel regression... ";
-	kernReg.train(ridgePen, sparsityPen);
-	cout << "Done!\n";
-
-	Vector weights = kernReg.getSolution().getWeights();
-	cout << weights;
 	
+	Matrix testQ = Identity(p);
+	Vector testBeta = zeroVec(p);
+	Vector initialWeights = zeroVec(p);
+
+	for (int coord = 0; coord < p; coord++) {
+		double val = 1 / ((double)coord + 1);
+		testQ.values[coord][coord] = val;
+		testBeta.values[coord] = 2*val;
+	}
+	
+	cout << "\nMinimizing quadratic form... ";
+
+	Vector testWeights = minimizeQuadForm(testQ, testBeta, initialWeights, 0.0);
+	cout << testWeights;
+
 }

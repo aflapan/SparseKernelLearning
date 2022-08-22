@@ -69,7 +69,7 @@ KenrnelRegressionSolutions KernelRegression::train(double ridgePen, double spars
 		Matrix Q = this->makeQMat(tmat);
 		Matrix kernMat = kernel->eval(trainSamples);
 		Vector beta = this->makeBetaVec(kernMat, tmat, Q, ridgePen);
-		Vector weights = this->minimizeQuadForm(Q, beta, sparsityPen / 2);
+		Vector weights = minimizeQuadForm(Q, beta, viewWeights, sparsityPen / 2);
 		solutions.setWeights(weights);
 		kernel->setWeights(weights);
 
@@ -177,11 +177,10 @@ Vector KernelRegression::makeBetaVec(Matrix& kernMat,  Matrix& tMat, Matrix& qMa
 }
 
 
-Vector KernelRegression::minimizeQuadForm(Matrix& qMat, Vector& betaVec, double sparsityPen, int maxIter, double convgThresh) {
+Vector minimizeQuadForm(Matrix& qMat, Vector& betaVec, Vector& weights, double sparsityPen, int maxIter, double convgThresh) {
 	double error = 1;
 	int iterNum = 0;
 	int dim = qMat.getNumCols();
-	Vector weights = this->getSolution().getWeights();
 
 	double oldObjVal = 0; 
 
@@ -204,7 +203,7 @@ Vector KernelRegression::minimizeQuadForm(Matrix& qMat, Vector& betaVec, double 
 		// update error 
 		iterNum++;
 		double newObjVal = quadFormObjectiveVal(weights, qMat, betaVec, sparsityPen);
-		error = (newObjVal - oldObjVal) / (oldObjVal + 1e-5);
+		error = (newObjVal - oldObjVal);
 		oldObjVal = newObjVal;
 
 	} while ((iterNum <= maxIter) && (error > convgThresh));

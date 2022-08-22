@@ -67,8 +67,7 @@ public:
 	Matrix makeTMat();
 	Matrix makeQMat(Matrix& tMat);
 	Vector makeBetaVec(Matrix& kernMat, Matrix& tMat, Matrix& qMat, double ridgePen);
-	Vector minimizeQuadForm(Matrix& qMat, Vector& betaVec, double sparsityPen, int maxIter = 1e5, double convgThresh = 1e-10);
-
+	
 	// Convergence functionality 
 	double meanSquaredError();
 
@@ -85,3 +84,4 @@ public:
 
 double quadFormObjectiveVal(Vector& weights, Matrix& qMat, Vector& betaVec, double sparsityPen);
 
+Vector minimizeQuadForm(Matrix& qMat, Vector& betaVec, Vector& weights,  double sparsityPen, int maxIter = 1e5, double convgThresh = 1e-10);
