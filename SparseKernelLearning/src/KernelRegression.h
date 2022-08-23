@@ -66,7 +66,7 @@ public:
 	// Functionality for solving sparse kernel regression
 	Matrix makeTMat();
 	Matrix makeQMat(Matrix& tMat);
-	Vector makeBetaVec(Matrix& kernMat, Matrix& tMat, Matrix& qMat, double ridgePen);
+	Vector makeBetaVec(Matrix& tMat, Matrix& qMat, double ridgePen);
 	
 	// Convergence functionality 
 	double meanSquaredError();

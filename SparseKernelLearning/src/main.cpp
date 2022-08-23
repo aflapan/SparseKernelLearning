@@ -22,14 +22,22 @@ int main()
 	GaussianKernel gk(p, 100.0);
 	KernelRegression kernReg(trainSamples, response, &gk);
 	double ridgePen = 1e-10; 
-	double sparsityPen = 0.1;
+	double sparsityPen = 1000;
+
+	kernReg.train(ridgePen, sparsityPen);
+	Vector finalWeights = kernReg.getSolution().getWeights();
+
+	cout << finalWeights << "\n\n";
+
+	cout << kernReg.meanSquaredError() << endl;
 	
+	/*
 	Matrix testQ = Identity(p);
 	Vector testBeta = zeroVec(p);
 	Vector initialWeights = zeroVec(p);
 
 	for (int coord = 0; coord < p; coord++) {
-		double val = 1 / ((double)coord + 1);
+		double val = 1 / ((double) coord + 1);
 		testQ.values[coord][coord] = val;
 		testBeta.values[coord] = 2*val;
 	}
@@ -38,5 +46,6 @@ int main()
 
 	Vector testWeights = minimizeQuadForm(testQ, testBeta, initialWeights, 0.0);
 	cout << testWeights;
+	*/
 
 }

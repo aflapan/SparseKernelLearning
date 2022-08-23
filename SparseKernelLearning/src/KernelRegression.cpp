@@ -68,7 +68,7 @@ KenrnelRegressionSolutions KernelRegression::train(double ridgePen, double spars
 		Matrix tmat = this->makeTMat();
 		Matrix Q = this->makeQMat(tmat);
 		Matrix kernMat = kernel->eval(trainSamples);
-		Vector beta = this->makeBetaVec(kernMat, tmat, Q, ridgePen);
+		Vector beta = this->makeBetaVec(tmat, Q, ridgePen);
 		Vector weights = minimizeQuadForm(Q, beta, viewWeights, sparsityPen / 2);
 		solutions.setWeights(weights);
 		kernel->setWeights(weights);
@@ -142,13 +142,12 @@ Matrix KernelRegression::makeQMat(Matrix& tMat) {
 	return Q; 
 }
 
-Vector KernelRegression::makeBetaVec(Matrix& kernMat,  Matrix& tMat, Matrix& qMat, double ridgePen) {
+Vector KernelRegression::makeBetaVec(Matrix& tMat, Matrix& qMat, double ridgePen) {
 	int nrows = tMat.getNumRows(), ncols = tMat.getNumCols();
 	double responseMean = mean(trainResponse);
 	Vector centeredResponse = trainResponse - responseMean; 
 	Vector weights = this->getSolution().getWeights();
 	Vector coeffs = this->getSolution().getSampleCoefficients();
-	Matrix tmatTranspose = transpose(tMat);
 
 	// column center tmat 
 	Vector colMeans = tMat.colMeans();
@@ -158,6 +157,15 @@ Vector KernelRegression::makeBetaVec(Matrix& kernMat,  Matrix& tMat, Matrix& qMa
 			tMat.values[row][col] -= colMeans.values[col];
 		}
 	}
+
+	Matrix tmatTranspose = transpose(tMat);
+
+
+
+	Matrix kernMat = kernel->eval(trainSamples);
+
+	// center rows and cols 
+	centerRowsCols(kernMat);
 
 	// add ridge penalty to centered kernel matrix 
 	for (int coord = 0; coord < nrows; coord++) {
