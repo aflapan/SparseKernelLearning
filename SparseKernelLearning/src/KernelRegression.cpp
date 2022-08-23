@@ -129,7 +129,7 @@ Matrix KernelRegression::makeTMat() {
 		derivMat = coeffs.values[row] * derivMat;
 		tmat = tmat + derivMat;
 	}
-	return tmat;
+	return tmat/nrows;
 }
 
 Matrix KernelRegression::makeQMat(Matrix& tMat) {

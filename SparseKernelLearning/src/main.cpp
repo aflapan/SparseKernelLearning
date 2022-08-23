@@ -22,7 +22,7 @@ int main()
 	GaussianKernel gk(p, 100.0);
 	KernelRegression kernReg(trainSamples, response, &gk);
 	double ridgePen = 1e-10; 
-	double sparsityPen = 1000;
+	double sparsityPen = 0.01;
 
 	kernReg.train(ridgePen, sparsityPen);
 	Vector finalWeights = kernReg.getSolution().getWeights();
