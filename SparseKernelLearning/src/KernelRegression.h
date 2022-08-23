@@ -56,8 +56,8 @@ public:
 	KenrnelRegressionSolutions getSolution() { return solutions; }
 
 	// train methods 
-	KenrnelRegressionSolutions train(double ridgePen);
-	KenrnelRegressionSolutions train(double ridgePen, double sparsityPen);
+	void train(double ridgePen);
+	void train(double ridgePen, double sparsityPen);
 
 	// predict methods
 	double predict(Vector& vec);

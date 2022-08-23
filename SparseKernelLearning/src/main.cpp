@@ -19,17 +19,22 @@ int main()
 	Vector response = matResponse.getCol(0); // convert from matrix to vector
 
 
+	// Center and scale the training samples and response
+	Normalize(trainSamples);
+	double responseMean = mean(response);
+	response = response - responseMean; 
+
+
+
 	GaussianKernel gk(p, 100.0);
 	KernelRegression kernReg(trainSamples, response, &gk);
 	double ridgePen = 1e-10; 
-	double sparsityPen = 0.01;
+	double sparsityPen = 1e-4;
 
 	kernReg.train(ridgePen, sparsityPen);
 	Vector finalWeights = kernReg.getSolution().getWeights();
 
 	cout << finalWeights << "\n\n";
-
-	cout << kernReg.meanSquaredError() << endl;
 	
 	/*
 	Matrix testQ = Identity(p);

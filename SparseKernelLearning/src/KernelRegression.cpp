@@ -10,7 +10,7 @@ using namespace std;
 // ------------------------------------------------------------------------------- //
 
 
-KenrnelRegressionSolutions KernelRegression::train(double ridgePen) {
+void KernelRegression::train(double ridgePen) {
 	int numSamples = trainSamples.getNumRows(); 
 
 	// Center response
@@ -49,40 +49,49 @@ KenrnelRegressionSolutions KernelRegression::train(double ridgePen) {
 	KenrnelRegressionSolutions trainedSolutions(kernel->getWeights(), coefficients, intercept);
 
 	solutions = trainedSolutions;
-	return solutions;
+	return ;
 }
 
-KenrnelRegressionSolutions KernelRegression::train(double ridgePen, double sparsityPen) {
-	cout << "\n";
-	solutions = this->train(ridgePen);
+void KernelRegression::train(double ridgePen, double sparsityPen) {
 
 	int iterNum = 0; 
 	double error = 1.0;
-	double oldObjVal = 0;
+	double oldObjVal, newObjVal, intermedObjVal;
+	// Initial training
+	this->train(ridgePen);
 
 	do {
-		solutions = this->train(ridgePen);
-		Vector viewWeights = solutions.getWeights();
-		cout << viewWeights << "\n\n";
+		
+		Vector oldWeights = solutions.getWeights();
+		oldObjVal = this->objectiveVal(ridgePen, sparsityPen);
 
 		Matrix tmat = this->makeTMat();
 		Matrix Q = this->makeQMat(tmat);
 		Matrix kernMat = kernel->eval(trainSamples);
 		Vector beta = this->makeBetaVec(tmat, Q, ridgePen);
-		Vector weights = minimizeQuadForm(Q, beta, viewWeights, sparsityPen / 2);
+		Vector weights = minimizeQuadForm(Q, beta, oldWeights, sparsityPen / 2);
+
 		solutions.setWeights(weights);
 		kernel->setWeights(weights);
 
-		double newObjVal = this->objectiveVal(ridgePen, sparsityPen);
+
+		intermedObjVal = this->objectiveVal(ridgePen, sparsityPen);
+		// Updated training
+		this->train(ridgePen);
+
+		newObjVal = this->objectiveVal(ridgePen, sparsityPen);
+		if (newObjVal > intermedObjVal)
+			cout << "\nregression increased objective value.\n";
+
 		error = abs(newObjVal - oldObjVal);
 		oldObjVal = newObjVal;
 		iterNum++;
 
-		cout << iterNum << " " << oldObjVal << endl;
+		cout << "Iteration: " << iterNum << ", " << "Objective Value: " << oldObjVal <<", " <<  "Error: " << error << endl;
 
-	} while ((iterNum < 100) && (error > 1e-10));
+	} while ((iterNum < 100) && (error > 1e-5));
 
-	return solutions;
+	return ;
 }
 
 
@@ -219,10 +228,9 @@ Vector minimizeQuadForm(Matrix& qMat, Vector& betaVec, Vector& weights, double s
 }
 
 
-
 // Convergence Functionality
 double KernelRegression::meanSquaredError() {
-	int nrows = trainSamples.getNumRows();
+	int nrows = trainSamples.getNumRows(); 
 
 	Vector predictions = this->predict(trainSamples);
 	Vector residuals = predictions - trainResponse;
