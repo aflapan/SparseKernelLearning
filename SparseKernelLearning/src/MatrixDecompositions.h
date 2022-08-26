@@ -26,15 +26,31 @@ public:
 };
 
 
-
-
-
 QR qrDecomp(Matrix mat);
 
 Matrix Householder(Matrix &mat);
 
 
+// ------------------------------------------------------------------------------ //
+// ------------------------------ LU Storage Class ------------------------------ //
+// ------------------------------------------------------------------------------ //
 
+class LU {
+	Matrix L; //Lower triangular
+	Matrix U; // Upper triangular
+
+public: 
+	LU(Matrix Lmat, Matrix Umat) {
+		L = Lmat;
+		U = Umat;
+	}
+
+	Matrix getL() { return L; }
+	Matrix getU() { return U; }
+};
+
+
+LU luDecomp(Matrix& mat);
 
 
 

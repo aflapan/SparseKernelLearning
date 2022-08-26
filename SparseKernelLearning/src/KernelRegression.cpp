@@ -56,39 +56,36 @@ void KernelRegression::train(double ridgePen, double sparsityPen) {
 
 	int iterNum = 0; 
 	double error = 1.0;
-	double oldObjVal, newObjVal, intermedObjVal;
+	double oldObjVal, newObjVal;
 	// Initial training
 	this->train(ridgePen);
+	oldObjVal = this->objectiveVal(ridgePen, sparsityPen);
 
 	do {
-		
-		Vector oldWeights = solutions.getWeights();
-		oldObjVal = this->objectiveVal(ridgePen, sparsityPen);
-
+		// Update weights 
 		Matrix tmat = this->makeTMat();
 		Matrix Q = this->makeQMat(tmat);
 		Matrix kernMat = kernel->eval(trainSamples);
 		Vector beta = this->makeBetaVec(tmat, Q, ridgePen);
+		Vector oldWeights = solutions.getWeights();
 		Vector weights = minimizeQuadForm(Q, beta, oldWeights, sparsityPen / 2);
 
 		solutions.setWeights(weights);
 		kernel->setWeights(weights);
 
-
-		intermedObjVal = this->objectiveVal(ridgePen, sparsityPen);
-		// Updated training
+		// Update sample coefficients 
 		this->train(ridgePen);
 
 		newObjVal = this->objectiveVal(ridgePen, sparsityPen);
-		if (newObjVal > intermedObjVal)
-			cout << "\nregression increased objective value.\n";
 
-		error = abs(newObjVal - oldObjVal);
+		// Test convergence and update 
+		error = abs(newObjVal - oldObjVal)/(abs(oldObjVal) + 1e-5);
 		oldObjVal = newObjVal;
 		iterNum++;
 
-		cout << "Iteration: " << iterNum << ", " << "Objective Value: " << oldObjVal <<", " <<  "Error: " << error << endl;
-
+		cout << "\n\nIteration: " << iterNum << ", " << "Objective Value: " << oldObjVal <<", " <<  "Error: " << error << "\n";
+		cout << "Weights: \n" << weights << "\n";
+	
 	} while ((iterNum < 100) && (error > 1e-5));
 
 	return ;
@@ -194,43 +191,9 @@ Vector KernelRegression::makeBetaVec(Matrix& tMat, Matrix& qMat, double ridgePen
 }
 
 
-Vector minimizeQuadForm(Matrix& qMat, Vector& betaVec, Vector& weights, double sparsityPen, int maxIter, double convgThresh) {
-	double error = 1;
-	int iterNum = 0;
-	int dim = qMat.getNumCols();
-
-	double oldObjVal = 0; 
-
-	do {
-		for (int coord = 0; coord < dim; coord++) {
-			Vector qRow = qMat.getRow(coord);
-			double dotProd = qRow* weights;
-			double resid = dotProd - qRow.values[coord] * weights.values[coord];
-			resid = betaVec.values[coord] - resid;
-			weights.values[coord] = softThresh(resid, sparsityPen);
-
-			// scale by qMat diagonal entry 
-			weights.values[coord] = weights.values[coord] / qMat.values[coord][coord];
-
-			// project to +/- 1 if value is above or below 
-			if (weights.values[coord] > 1) { weights.values[coord] = 1; }
-			else if (weights.values[coord] < -1) { weights.values[coord] = -1; }
-		}
-
-		// update error 
-		iterNum++;
-		double newObjVal = quadFormObjectiveVal(weights, qMat, betaVec, sparsityPen);
-		error = (newObjVal - oldObjVal);
-		oldObjVal = newObjVal;
-
-	} while ((iterNum <= maxIter) && (error > convgThresh));
-	return weights;
-}
-
-
 // Convergence Functionality
 double KernelRegression::meanSquaredError() {
-	int nrows = trainSamples.getNumRows(); 
+	int nrows = trainSamples.getNumRows();
 
 	Vector predictions = this->predict(trainSamples);
 	Vector residuals = predictions - trainResponse;
@@ -265,6 +228,42 @@ double KernelRegression::objectiveVal(double ridgePen, double sparsityPen) {
 // ------------------------------------------------------------------------------ //
 // ------------------------------ Helper fucntions ------------------------------ //
 // ------------------------------------------------------------------------------ //
+
+Vector minimizeQuadForm(Matrix& qMat, Vector& betaVec, Vector& weights, double sparsityPen, int maxIter, double convgThresh) {
+	double error = 1;
+	int iterNum = 0;
+	int dim = qMat.getNumCols();
+
+	double oldObjVal = 0; 
+
+	do {
+		for (int coord = 0; coord < dim; coord++) {
+			if (abs(weights.values[coord]) < 1e-15)
+				continue;
+
+			Vector qRow = qMat.getRow(coord);
+			double dotProd = qRow* weights;
+			double resid = dotProd - qRow.values[coord] * weights.values[coord];
+			resid = betaVec.values[coord] - resid;
+			weights.values[coord] = softThresh(resid, sparsityPen);
+
+			// scale by qMat diagonal entry 
+			weights.values[coord] = weights.values[coord] / qMat.values[coord][coord];
+
+			// project to +/- 1 if value is above or below 
+			if (weights.values[coord] > 1) { weights.values[coord] = 1; }
+			else if (weights.values[coord] < -1) { weights.values[coord] = -1; }
+		}
+
+		// update error 
+		iterNum++;
+		double newObjVal = quadFormObjectiveVal(weights, qMat, betaVec, sparsityPen);
+		error = (newObjVal - oldObjVal);
+		oldObjVal = newObjVal;
+
+	} while ((iterNum <= maxIter) && (error > convgThresh));
+	return weights;
+}
 
 double quadFormObjectiveVal(Vector& weights, Matrix& qMat, Vector& betaVec, double sparsityPen) {
 	Vector qWeight = qMat * weights;

@@ -128,3 +128,104 @@ Matrix GaussianKernel::eval(Matrix& mat) {
 	return eval(mat, mat);
 }
 
+
+// Linear Kernel 
+
+// evaluation functions 
+double LinearKernel::eval(Vector& vec1, Vector& vec2) {
+
+	// test dimension correctness 
+	int dim1 = vec1.getDim(), dim2 = vec2.getDim(), kernDim = this->getDim();
+	if (dim1 != kernDim || dim2 != kernDim)
+		throw invalid_argument("Dimension of vectors must be equal to weighted kernel dimension.");
+
+	Vector weights = this->getWeights();
+	double weightedDotProd = 0;
+
+	for (int coord = 0; coord < kernDim; coord++) {
+		weightedDotProd += weights.values[coord] * weights.values[coord] * vec1.values[coord] * vec2.values[coord];
+	}
+	return weightedDotProd;
+}
+
+Vector LinearKernel::eval(Matrix& mat, Vector& vec) {
+	// test dimension correctness 
+	int matDim = mat.getNumCols(), vecDim = vec.getDim(), kernDim = this->getDim();
+	if (matDim != kernDim || vecDim != kernDim)
+		throw invalid_argument("Matrix and Vector must have same dimensionality as weighted kernel.");
+
+	int nrows = mat.getNumRows();
+	Vector kernelVec(mat.getNumRows());
+	Vector weights = this->getWeights(); 
+
+	for (int row = 0; row < nrows; row++) {
+		kernelVec.values[row] = 0;
+		for (int col = 0; col < kernDim; col++) {
+			kernelVec.values[row] += weights.values[col] * weights.values[col] * mat.values[row][col] * vec.values[col];
+		}
+	}
+	return kernelVec;
+}
+
+Matrix LinearKernel::eval(Matrix& mat1, Matrix& mat2) {
+	// test dimension correctness 
+	int matDim1 = mat1.getNumCols(), mat2Dim = mat2.getNumCols(), kernDim = this->getDim();
+	if (matDim1 != kernDim || mat2Dim != kernDim)
+		throw invalid_argument("Matrices must have same dimensionality as weighted kernel.");
+
+	int nrows1 = mat1.getNumRows(), nrows2 = mat2.getNumRows();
+	Matrix kernelMatrix = zeroMat(nrows1, nrows2);
+	Vector weights = this->getWeights();
+
+	for (int row1 = 0; row1 < nrows1; row1++) {
+		for (int row2 = 0; row2 < nrows2; row2++) {
+			for (int coord = 0; coord < kernDim; coord++) {
+				kernelMatrix.values[row1][row2] += weights.values[coord] * weights.values[coord] * mat1.values[row1][coord] * mat2.values[row2][coord];
+			}
+		}
+	}
+
+	return kernelMatrix;
+}
+
+Matrix LinearKernel::eval(Matrix& mat) {
+	return this->eval(mat, mat);
+}
+
+
+// derivative functions
+Vector LinearKernel::deriv(Vector& vec1, Vector& vec2) {
+
+	// test dimension correctness 
+	int dim1 = vec1.getDim(), dim2 = vec2.getDim(), kernDim = this->getDim();
+	if (dim1 != kernDim || dim2 != kernDim)
+		throw invalid_argument("Dimension of vectors must be equal to weighted kernel dimension.");
+
+	Vector kernDeriv(kernDim);
+	Vector weights = this->getWeights();
+
+	for (int coord = 0; coord < kernDim; coord++) {
+		kernDeriv.values[coord] = 2 * weights.values[coord] * vec1.values[coord] * vec2.values[coord];
+	}
+	return kernDeriv;
+}
+
+
+Matrix LinearKernel::deriv(Matrix& mat, Vector& vec) {
+	// test dimension correctness 
+	int matDim = mat.getNumCols(), vecDim = vec.getDim(), kernDim = this->getDim();
+	if (matDim != kernDim || vecDim != kernDim)
+		throw invalid_argument("Matrix and Vector must have same dimensionality as weighted kernel.");
+
+	int nrows = mat.getNumRows();
+	Matrix kernDeriv(nrows, kernDim);
+	Vector weights = this->getWeights();
+
+	for (int row = 0; row < nrows; row++) {
+		for (int coord = 0; coord < kernDim; coord++) {
+			kernDeriv.values[row][coord] = 2 * weights.values[coord] * mat.values[row][coord] * vec.values[coord];
+		}
+	}
+	return kernDeriv;
+}
+

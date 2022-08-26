@@ -76,10 +76,30 @@ public:
 
 	Matrix eval(Matrix& mat);
 
-	// pure virtual derivative functions
+	// derivative functions
 	Vector deriv(Vector& vec1, Vector& vec2);
 
 	Matrix deriv(Matrix& mat, Vector& vec);
 
+};
+
+class LinearKernel : public WeightedKernel {
+public:
+	LinearKernel(int dim) : WeightedKernel(dim) {}
+
+	// evaluation functions 
+	double eval(Vector& vec1, Vector& vec2);
+
+	Vector eval(Matrix& mat, Vector& vec);
+
+	Matrix eval(Matrix& mat1, Matrix& mat2);
+
+	Matrix eval(Matrix& mat);
+
+	// derivative functions
+	Vector deriv(Vector& vec1, Vector& vec2);
+
+	Matrix deriv(Matrix& mat, Vector& vec);
 
 };
+

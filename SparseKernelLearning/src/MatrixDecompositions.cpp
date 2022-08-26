@@ -123,6 +123,32 @@ Matrix Householder(Matrix& mat) {
 
 
 
+// ------------------------------------------------------------------------------ //
+// ------------------------------ LU Decomposition ------------------------------ //
+// ------------------------------------------------------------------------------ //
+
+
+LU luDecomp(Matrix& mat) {
+	int nrows = mat.getNumRows(), ncols = mat.getNumCols();
+
+	Matrix U = mat; 
+	Matrix L = Identity(nrows);
+	
+	for (int col = 0; col < ncols; col++) {
+		for (int row = (col + 1); row < nrows; row++) {
+			L.values[row][col] = U.values[row][col] / U.values[col][col];
+
+			// Rescale sub-row
+			for (int nextCol = row; nextCol < ncols; nextCol++) {
+				U.values[row][nextCol] = U.values[row][nextCol] - L.values[row][col] * U.values[col][nextCol];
+			}
+		}
+	}
+	
+	LU luStorage(L, U);
+	return luStorage;
+}
+
 
 // ------------------------------------------------------------------------------ //
 // ------------------------------ Helper Functions ------------------------------ //
